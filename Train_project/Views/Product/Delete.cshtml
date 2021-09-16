@@ -1,4 +1,5 @@
-﻿@model Train_project.Models.Product
+﻿@model Train_project_Models.Product
+@using Train_project_Utility
 
 
 <form method="post">
@@ -6,14 +7,14 @@
     <input asp-for="Id" hidden />
 
 
-    <div class="border p-3">
+    <div class="border p-3 bg-white">
 
         <div class="form-group row">
             <h2 class="text-info pl-3">Delete Product</h2>
         </div>
         <div class="row">
             <div class="col-8">
-                <div class="form-group row">
+                <div class="form-group row py-2">
                     <div class="col-4">
                         <label asp-for="Name"></label>
                     </div>
@@ -21,7 +22,7 @@
                         <input asp-for="Name" disabled class="form-control" />
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row py-2">
                     <div class="col-4">
                         <label asp-for="Price"></label>
                     </div>
@@ -29,7 +30,7 @@
                         <input asp-for="Price" disabled class="form-control" />
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row py-2">
                     <div class="col-4">
                         <label asp-for="Description"></label>
                     </div>
@@ -38,7 +39,7 @@
                     </div>
                 </div>
 
-                <div class="form-group row">
+                <div class="form-group row py-2">
                     <div class="col-4">
                         <label asp-for="CategoryId"></label>
                     </div>
@@ -46,7 +47,7 @@
                         <input asp-for="Category.Name" disabled class="form-control" />
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row py-2">
                     <div class="col-4">
                         <label asp-for="ApplicationTypeId"></label>
                     </div>
@@ -54,7 +55,7 @@
                         <input asp-for="ApplicationType.Name" disabled class="form-control" />
                     </div>
                 </div>
-                <div class="form-group row">
+                <div class="form-group row py-2">
                     <div class="col-8 offset-4 row">
                         <div class="col">
 

@@ -1,4 +1,5 @@
-﻿@model Train_project.Models.ViewModels.DetailsVM
+﻿@model Train_project_Models.ViewModels.DetailsVM
+@using Train_project_Utility
 
 <div class="">
     <form method="post">
@@ -22,8 +23,8 @@
                             <div class="col-12 col-lg-8">
                                 <div class="row pl-13">
                                     <div class="col-12">
-                                        <span class="badge p-3 border" style="background-color:lavenderblush">@Model.Product.Category.Name</span>
-                                        <span class="badge p-3 border" style="background-color:azure">@Model.Product.ApplicationType.Name</span>
+                                        <span class="badge p-3 border text-dark" style="background-color:lavenderblush">@Model.Product.Category.Name</span>
+                                        <span class="badge p-3 border text-dark" style="background-color:azure">@Model.Product.ApplicationType.Name</span>
                                         <h3 class="text-success"></h3>
                                         <p class="text-secondary">@Html.Raw(Model.Product.Description)</p>
                                     </div>
@@ -40,7 +41,7 @@
                         <div class="col-12 col-md-6">
                             @if (Model.ExistsInCart)
                             {
-                            <a asp-action="RemoveFromCart" asp-route-id="@Model.Product.Id" class="btn btn-warning btn-square form-control btn-lg" style="height:50px;">Remove from Cart</a>  
+                                <a asp-action="RemoveFromCart" asp-route-id="@Model.Product.Id" class="btn btn-warning btn-square form-control btn-lg" style="height:50px;">Remove from Cart</a>
                             }
                             else
                             {
