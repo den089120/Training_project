@@ -8,26 +8,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Train_project.Data;
-using Train_project.Models;
-using Train_project.Models.ViewModels;
+using Train_project_DataAccess.Data;
+using Train_project_DataAccess.Repository.IRepository;
+using Train_project_Models;
+using Train_project_Models.ViewModels;
+using Train_project_Utility;
 
 namespace Train_project.Controllers
 {
     [Authorize(Roles = WC.AdminRole)]
     public class ProductController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly IProductRepository _prodRepo;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(ApplicationDbContext db, IWebHostEnvironment webHostEnvironment)
+        public ProductController(IProductRepository prodRepo, IWebHostEnvironment webHostEnvironment)
         {
-            _db = db;
+            _prodRepo = prodRepo;
             _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
-            IEnumerable<Product> objList = _db.Product.Include(u => u.Category).Include(u => u.ApplicationType);
+            IEnumerable<Product> objList = _prodRepo.GetAll(includeProperties:"Category,ApplicationType");
             //foreach(var obj in objList)
             //{
             //    obj.Category = _db.Category.FirstOrDefault(u => u.Id == obj.CategoryId);
@@ -50,16 +52,8 @@ namespace Train_project.Controllers
             ProductVM productVM = new ProductVM()
             {
                 Product = new Product(),
-                CategorySelectList = _db.Category.Select(i => new SelectListItem
-                {
-                    Text = i.Name,
-                    Value = i.Id.ToString()
-                }),
-                 ApplicationTypeSelectList = _db.ApplicationType.Select(i => new SelectListItem
-                 {
-                     Text = i.Name,
-                     Value = i.Id.ToString()
-                 })
+                CategorySelectList = _prodRepo.GetAllDropdownList(WC.CategoryName),
+                 ApplicationTypeSelectList = _prodRepo.GetAllDropdownList(WC.ApplicationTypeName),
             };
             if (id == null)
             {
@@ -67,7 +61,7 @@ namespace Train_project.Controllers
             }
             else
             {
-                productVM.Product = _db.Product.Find(id);
+                productVM.Product = _prodRepo.Find(id.GetValueOrDefault());
                 if (productVM.Product == null)
                 {
                     return NotFound();
@@ -98,11 +92,11 @@ namespace Train_project.Controllers
 
                     productVM.Product.Image = fileName + extension;
 
-                    _db.Product.Add(productVM.Product);
+                    _prodRepo.Add(productVM.Product);
                 }
                 else
                 {
-                    var objFromDb = _db.Product.AsNoTracking().FirstOrDefault(u => u.Id == productVM.Product.Id);
+                    var objFromDb = _prodRepo.FirstOrDefault(u => u.Id == productVM.Product.Id, isTracking:false);
 
                     if (files.Count > 0)
                     {
@@ -127,21 +121,14 @@ namespace Train_project.Controllers
                     {
                         productVM.Product.Image = objFromDb.Image;
                     }
-                    _db.Product.Update(productVM.Product);
+                    _prodRepo.Update(productVM.Product);
                 }
-                _db.SaveChanges();
+                _prodRepo.Save();
+                TempData[WC.Success] = "Product created successfully";
                 return RedirectToAction("Index");
             }
-            productVM.CategorySelectList = _db.Category.Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
-            productVM.ApplicationTypeSelectList = _db.ApplicationType.Select(i => new SelectListItem
-            {
-                Text = i.Name,
-                Value = i.Id.ToString()
-            });
+            productVM.CategorySelectList = _prodRepo.GetAllDropdownList(WC.CategoryName);
+            productVM.ApplicationTypeSelectList = _prodRepo.GetAllDropdownList(WC.ApplicationTypeName);
             return View(productVM);
         }
         
@@ -152,7 +139,7 @@ namespace Train_project.Controllers
             {
                 return NotFound();
             }
-            Product product = _db.Product.Include(u => u.Category).Include(u => u.ApplicationType).FirstOrDefault(u => u.Id == id);
+            Product product = _prodRepo.FirstOrDefault(u => u.Id == id, includeProperties:"Category, ApplicationType");
             //product.Category = _db.Category.Find(product.Category.Id);
             
             if (product == null)
@@ -166,7 +153,7 @@ namespace Train_project.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeletePost(int? id)
         {
-            var obj = _db.Product.Find(id);
+            var obj = _prodRepo.Find(id.GetValueOrDefault());
             if (obj == null)
             {
                 return NotFound();
@@ -180,8 +167,9 @@ namespace Train_project.Controllers
                 System.IO.File.Delete(oldFile);
             }
 
-            _db.Product.Remove(obj);
-            _db.SaveChanges();
+            _prodRepo.Remove(obj);
+            _prodRepo.Save();
+            TempData[WC.Success] = "Product delete successfully";
             return RedirectToAction("Index");
 
 
