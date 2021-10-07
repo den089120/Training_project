@@ -12,7 +12,7 @@ using Train_project_Utility;
 
 namespace Train_project.Controllers
 {
-    [Authorize(WC.AdminRole)]
+    [Authorize(Roles = WC.AdminRole)]
     public class InquiryController : Controller
     {
         private readonly IinquiryHeaderRepository _inqHRepo;
