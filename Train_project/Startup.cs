@@ -15,6 +15,7 @@ using Train_project_DataAccess.Data;
 using Train_project_DataAccess.Repository;
 using Train_project_DataAccess.Repository.IRepository;
 using Train_project_Utility;
+using Train_project_Utility.BrainTree;
 
 namespace Train_project
 {
@@ -46,12 +47,18 @@ namespace Train_project
                 Options.Cookie.HttpOnly = true;
                 Options.Cookie.IsEssential = true;
             });
+            services.Configure<BrainTreeSettings>(Configuration.GetSection("BrainTree"));
+            services.AddSingleton<IBrainTreeGate, BrainTreeGate>();
 
             services.AddScoped<ICategoryRepository, CategoryRepository>();
             services.AddScoped<IApplicationTypeRepository, ApplicationTypeRepository>();
             services.AddScoped<IProductRepository, ProductRepository>();
             services.AddScoped<IinquiryHeaderRepository, InquiryHeaderRepository>();
             services.AddScoped<IinquiryDetailRepository, InquiryDetailRepository>();
+
+            services.AddScoped<IOrderHeaderRepository, OrderHeaderRepository>();
+            services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+
             services.AddScoped<IApplicationUserRepository, ApplicationUserRepository>();
 
             services.AddControllersWithViews();
